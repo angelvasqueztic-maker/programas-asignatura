@@ -76,6 +76,15 @@
         .btn-secondary:hover {
             background-color: #eab308; /* yellow-500 */
         }
+        /* Custom radio button styles */
+        .radio-label {
+            transition: all 0.2s ease-in-out;
+        }
+        input[type="radio"]:checked + .radio-label {
+            background-color: var(--main-blue);
+            color: white;
+            border-color: var(--main-blue);
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -245,7 +254,7 @@
     
     <script>
     // --- Gemini API Configuration ---
-    const apiKey = ""; 
+    const apiKey = ""; // IMPORTANT: Paste your Google AI Studio API key here
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
     
     // --- State Management ---
@@ -368,31 +377,76 @@
             case 1: // Initial Info
                 section1Container.innerHTML = `
                     <div class="phase-container">
-                        <h3 class="text-xl font-semibold text-center mb-2">Datos Generales</h3>
-                        <p class="text-sm text-center mb-6" style="color: var(--text-gray);">Comencemos con la información básica de la asignatura.</p>
-                        <div class="space-y-4 max-w-lg mx-auto">
+                        <h3 class="text-xl font-semibold text-center mb-6">Datos Generales</h3>
+                        <div class="space-y-6 max-w-2xl mx-auto">
                             <div>
-                                <label for="answer-asignatura" class="block font-semibold text-gray-700">¿Cuál es el nombre de la asignatura?</label>
-                                <input type="text" id="answer-asignatura" class="mt-1 w-full p-2 border border-gray-300 rounded-md">
+                                <label for="answer-carrera" class="block font-semibold text-gray-700">Carrera o Programa Académico</label>
+                                <input type="text" id="answer-carrera" class="mt-1 w-full p-2 border border-gray-300 rounded-md" placeholder="Ej: Ingeniería de Sistemas">
                             </div>
                             <div>
-                                <label for="answer-carrera" class="block font-semibold text-gray-700">¿A qué carrera o programa pertenece?</label>
-                                <input type="text" id="answer-carrera" class="mt-1 w-full p-2 border border-gray-300 rounded-md">
+                                <label for="answer-asignatura" class="block font-semibold text-gray-700">Nombre de la Asignatura</label>
+                                <input type="text" id="answer-asignatura" class="mt-1 w-full p-2 border border-gray-300 rounded-md" placeholder="Ej: Programación I">
                             </div>
+                            
                             <div>
-                                <label for="answer-semestre" class="block font-semibold text-gray-700">¿En qué semestre o año se ubica?</label>
-                                <input type="text" id="answer-semestre" class="mt-1 w-full p-2 border border-gray-300 rounded-md">
+                                <label class="block font-semibold text-gray-700">Tipo de Asignatura</label>
+                                <div class="mt-2 grid sm:grid-cols-3 gap-3">
+                                    <div>
+                                        <input type="radio" name="tipo-asignatura" id="tipo-basica" value="Básica" class="sr-only">
+                                        <label for="tipo-basica" class="radio-label block p-3 border rounded-lg cursor-pointer text-center">
+                                            <span class="font-bold block">Básica</span>
+                                            <span class="text-xs">Cimientos para el futuro aprendizaje.</span>
+                                        </label>
+                                    </div>
+                                    <div>
+                                        <input type="radio" name="tipo-asignatura" id="tipo-especifica" value="Específica" class="sr-only">
+                                        <label for="tipo-especifica" class="radio-label block p-3 border rounded-lg cursor-pointer text-center">
+                                            <span class="font-bold block">Específica</span>
+                                            <span class="text-xs">Vinculada al perfil profesional.</span>
+                                        </label>
+                                    </div>
+                                    <div>
+                                        <input type="radio" name="tipo-asignatura" id="tipo-generica" value="Genérica" class="sr-only">
+                                        <label for="tipo-generica" class="radio-label block p-3 border rounded-lg cursor-pointer text-center">
+                                            <span class="font-bold block">Genérica</span>
+                                            <span class="text-xs">Competencias transversales.</span>
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
+
+                            <div>
+                                <label class="block font-semibold text-gray-700">Ciclo Académico</label>
+                                <div class="mt-2 grid sm:grid-cols-3 gap-3">
+                                    <div>
+                                        <input type="radio" name="ciclo-semestre" id="ciclo-primero" value="Primer Ciclo (1ro-3er Semestre)" class="sr-only">
+                                        <label for="ciclo-primero" class="radio-label block p-3 border rounded-lg cursor-pointer text-center">Primer Ciclo</label>
+                                    </div>
+                                    <div>
+                                        <input type="radio" name="ciclo-semestre" id="ciclo-segundo" value="Segundo Ciclo (4to-6to Semestre)" class="sr-only">
+                                        <label for="ciclo-segundo" class="radio-label block p-3 border rounded-lg cursor-pointer text-center">Segundo Ciclo</label>
+                                    </div>
+                                    <div>
+                                        <input type="radio" name="ciclo-semestre" id="ciclo-tercero" value="Tercer Ciclo (7mo en adelante)" class="sr-only">
+                                        <label for="ciclo-tercero" class="radio-label block p-3 border rounded-lg cursor-pointer text-center">Tercer Ciclo</label>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                         <div class="text-right mt-8">
                             <button id="sec1-phase1-next" class="font-bold py-2 px-6 rounded-lg text-white btn-primary">Siguiente &rarr;</button>
                         </div>
                     </div>`;
                 document.getElementById('sec1-phase1-next').addEventListener('click', () => {
-                    state.answers.asignatura = document.getElementById('answer-asignatura').value;
                     state.answers.carrera = document.getElementById('answer-carrera').value;
-                    state.answers.semestre = document.getElementById('answer-semestre').value;
-                    if (state.answers.asignatura && state.answers.carrera && state.answers.semestre) {
+                    state.answers.asignatura = document.getElementById('answer-asignatura').value;
+                    const tipoAsignatura = document.querySelector('input[name="tipo-asignatura"]:checked');
+                    const cicloSemestre = document.querySelector('input[name="ciclo-semestre"]:checked');
+                    
+                    if (state.answers.carrera && state.answers.asignatura && tipoAsignatura && cicloSemestre) {
+                        state.answers.tipoAsignatura = tipoAsignatura.value;
+                        state.answers.cicloSemestre = cicloSemestre.value;
                         state.identificationSubPhase = 2;
                         renderIdentificationSection();
                     } else {
@@ -743,9 +797,10 @@
     
     document.getElementById('copy-all-btn').addEventListener('click', () => {
         let fullText = "**SECCIÓN 1: IDENTIFICACIÓN**\n\n";
-        fullText += `**Asignatura:** ${state.answers.asignatura || ''}\n`;
         fullText += `**Carrera:** ${state.answers.carrera || ''}\n`;
-        fullText += `**Semestre:** ${state.answers.semestre || ''}\n\n`;
+        fullText += `**Asignatura:** ${state.answers.asignatura || ''}\n`;
+        fullText += `**Tipo de Asignatura:** ${state.answers.tipoAsignatura || ''}\n`;
+        fullText += `**Ciclo Académico:** ${state.answers.cicloSemestre || ''}\n\n`;
         fullText += `**Problemas de la práctica profesional:**\n${state.answers.problematizacion?.problemas || ''}\n\n`;
         fullText += `**Tareas/Funciones/Procesos:**\n${state.answers.problematizacion?.tareas || ''}\n\n`;
         fullText += "**Justificación:**\n" + (document.getElementById('justification-editor')?.value || state.answers.justification || '') + "\n\n";
@@ -809,12 +864,8 @@
         const draftBtn = document.getElementById('generate-draft-btn');
         toggleButtonLoading(draftBtn, true);
         try {
-            const { asignatura, carrera, semestre } = state.answers;
-            if (!asignatura || !carrera || !semestre) {
-                showNotification("Por favor, completa los campos de la fase anterior primero.", 'error');
-                return;
-            }
-            const prompt = `Rol: Eres un experto en diseño curricular. Tarea: Genera un borrador para la sección de problematización de una asignatura. Contexto: - Asignatura: ${asignatura} - Carrera: ${carrera} - Semestre: ${semestre}. Devuelve un único objeto JSON con las claves "problemas" y "tareas". En "problemas" describe los problemas de la práctica profesional. En "tareas" describe las tareas, funciones o procesos que se aprenden.`;
+            const { asignatura, carrera, tipoAsignatura, cicloSemestre } = state.answers;
+            const prompt = `Rol: Eres un experto en diseño curricular. Tarea: Genera un borrador para la sección de problematización de una asignatura. Contexto: - Asignatura: ${asignatura} - Carrera: ${carrera} - Tipo: ${tipoAsignatura} - Ciclo: ${cicloSemestre}. Devuelve un único objeto JSON con las claves "problemas" y "tareas". En "problemas" describe los problemas de la práctica profesional relevantes para este nivel. En "tareas" describe las tareas/funciones que se aprenden.`;
             const payload = {
                 contents: [{ parts: [{ text: prompt }] }],
                 generationConfig: {
@@ -838,9 +889,9 @@
         }
     }
     async function generateInitialCompetency() {
-        const { asignatura, carrera, semestre, problematizacion } = state.answers;
+        const { asignatura, carrera, tipoAsignatura, cicloSemestre, problematizacion } = state.answers;
         const problematizacionContext = `Problemas a resolver: ${problematizacion.problemas}. Tareas/Funciones que se aprenden: ${problematizacion.tareas}`;
-        const prompt = `Rol: Eres un experto en diseño curricular por competencias. Tarea: Formula una competencia profesional completa basada en el siguiente contexto. Contexto: - Asignatura: ${asignatura} - Carrera: ${carrera} - Semestre: ${semestre} - Fundamentación y Retos Profesionales: ${problematizacionContext}. Reglas: 1. Un solo verbo de desempeño en presente. 2. Objeto claro. 3. Finalidad: Debe ser concisa y referirse al problema principal. 4. Condición de Referencia: Debe ser general pero clara, especificando un marco de calidad sin entrar en detalles excesivos. Devuelve un único objeto JSON con las claves: "verb", "object", "purpose", "condition".`;
+        const prompt = `Rol: Eres un experto en diseño curricular por competencias. Tarea: Formula una competencia profesional completa y pedagógicamente adecuada. Contexto: - Asignatura: ${asignatura} - Carrera: ${carrera} - Tipo de Asignatura: ${tipoAsignatura} - Ciclo Académico: ${cicloSemestre} - Fundamentación y Retos: ${problematizacionContext}. Reglas: 1. Modula la complejidad de la competencia según el ciclo (inicial=más fundamental, final=más profesionalizante). 2. Asegura que el propósito sea coherente con el tipo de asignatura (Básica=fundamentos, Específica=perfil profesional, Genérica=transversal). 3. Evita competencias laborales prematuras en ciclos iniciales. 4. Devuelve un único objeto JSON con las claves: "verb", "object", "purpose", "condition".`;
         const payload = {
             contents: [{ parts: [{ text: prompt }] }],
             generationConfig: {
@@ -872,7 +923,8 @@
         const container = document.getElementById('alternatives-container');
         container.innerHTML = `<div class="spinner h-5 w-5 mx-auto" style="color: var(--main-blue);"></div>`;
         try {
-            const prompt = `Rol: Eres un experto en diseño curricular. Tarea: Basado en la siguiente problematización, genera 3 formulaciones alternativas completas para la competencia de la asignatura. Problematización: ${JSON.stringify(state.answers.problematizacion)}. Devuelve un objeto JSON con la clave "alternatives", que es un array de objetos, cada uno con las claves "verb", "object", "purpose", "condition".`;
+            const { asignatura, carrera, tipoAsignatura, cicloSemestre, problematizacion } = state.answers;
+            const prompt = `Rol: Eres un experto en diseño curricular. Tarea: Basado en el siguiente contexto, genera 3 formulaciones alternativas completas para la competencia de la asignatura. Contexto: - Asignatura: ${asignatura} - Carrera: ${carrera} - Tipo: ${tipoAsignatura} - Ciclo: ${cicloSemestre} - Problematización: ${JSON.stringify(problematizacion)}. Reglas: Asegura que las alternativas sean pedagógicamente adecuadas para el tipo y ciclo de la asignatura. Devuelve un objeto JSON con la clave "alternatives", que es un array de objetos, cada uno con las claves "verb", "object", "purpose", "condition".`;
             const payload = { contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json" } };
             const responseText = await callGemini(payload);
             const responseJson = JSON.parse(responseText);
