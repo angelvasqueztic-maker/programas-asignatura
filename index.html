@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistente para el Planteamiento del Programa de Asignatura</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --main-blue: #0D4275;
+            --highlight-yellow: #FECC17;
+            --highlight-yellow-light: #FFF2C6;
+            --text-gray: #727070;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        main {
+            flex-grow: 1;
+        }
+        .section-container, .phase-container {
+            animation: fadeIn 0.6s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .nav-tab {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 4px solid transparent;
+        }
+        .nav-tab.active {
+            border-bottom-color: var(--main-blue);
+            color: var(--main-blue);
+            font-weight: 600;
+        }
+        .nav-tab:not(.active):not(.disabled) {
+            color: var(--text-gray);
+        }
+        .nav-tab.disabled {
+            color: #d1d5db; /* gray-300 */
+            cursor: not-allowed;
+        }
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .suggestion-item {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .suggestion-item:hover {
+            background-color: #eef2ff;
+        }
+        .btn-primary {
+            background-color: var(--main-blue);
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #0b3a64;
+        }
+        .btn-secondary {
+            background-color: var(--highlight-yellow);
+            color: var(--main-blue);
+        }
+        .btn-secondary:hover {
+            background-color: #eab308; /* yellow-500 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <div class="container mx-auto p-4 sm:p-6 md:p-8 max-w-5xl flex-grow">
+        
+        <header class="text-center mb-6">
+            <h1 class="text-2xl sm:text-3xl font-bold" style="color: var(--main-blue);">Asistente para el Planteamiento del Programa de enseñanza y aprendizaje de la asignatura</h1>
+            <p class="text-md mt-2" style="color: var(--text-gray);">Universidad Católica Boliviana<br>Unidad de Desarrollo Docente y Curricular - Sede Cochabamba</p>
+        </header>
+        
+        <!-- Navigation Tabs -->
+        <nav class="flex border-b-2 border-gray-200 mb-8 overflow-x-auto bg-white rounded-t-lg shadow-sm" role="tablist" aria-label="Pestañas de navegación">
+            <div id="nav-sec1" class="nav-tab active p-4 flex-shrink-0" role="tab" aria-selected="true" aria-controls="section-1">1. Identificación</div>
+            <div id="nav-sec2" class="nav-tab disabled p-4 flex-shrink-0" role="tab" aria-selected="false" aria-controls="section-2" tabindex="-1">2. Competencia</div>
+            <div id="nav-sec3" class="nav-tab disabled p-4 flex-shrink-0" role="tab" aria-selected="false" aria-controls="section-3" tabindex="-1">3. Contenidos</div>
+            <div id="nav-sec4" class="nav-tab disabled p-4 flex-shrink-0" role="tab" aria-selected="false" aria-controls="section-4" tabindex="-1">4. Elementos</div>
+            <div id="nav-sec5" class="nav-tab disabled p-4 flex-shrink-0" role="tab" aria-selected="false" aria-controls="section-5" tabindex="-1">5. Recursos</div>
+            <div id="nav-sec6" class="nav-tab disabled p-4 flex-shrink-0" role="tab" aria-selected="false" aria-controls="section-6" tabindex="-1">6. Bibliografía</div>
+        </nav>
+        
+        <main id="interactive-board" class="bg-white p-6 sm:p-8 rounded-b-xl shadow-lg min-h-[450px]">
+            <!-- SECCIÓN 1: IDENTIFICACIÓN -->
+            <div id="section-1" class="section-container" role="tabpanel" aria-labelledby="nav-sec1">
+                <!-- El contenido de la Sección 1 se gestionará dinámicamente -->
+            </div>
+            
+            <!-- SECCIÓN 2: COMPETENCIA -->
+            <div id="section-2" class="section-container hidden" role="tabpanel" aria-labelledby="nav-sec2">
+                <h2 class="text-2xl font-bold mb-4" style="color: var(--main-blue);">Sección 2: Competencia de la Asignatura</h2>
+                <p class="text-sm mb-4" style="color: var(--text-gray);">Esta es la competencia de la asignatura que se ha definido en la sección anterior. Es el eje central del programa.</p>
+                <div id="competency-display" class="p-6 rounded-lg text-lg font-semibold" style="background-color: #eef2ff; border-left: 4px solid var(--main-blue); color: var(--main-blue);">
+                    <!-- La competencia final se mostrará aquí -->
+                </div>
+                 <div class="flex justify-between mt-8">
+                    <button onclick="navigateBack()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg">&larr; Retroceder</button>
+                    <button onclick="navigateToSection(3)" class="font-bold py-2 px-6 rounded-lg btn-primary">Siguiente &rarr;</button>
+                </div>
+            </div>
+            
+            <!-- SECCIÓN 3: CONTENIDOS -->
+            <div id="section-3" class="section-container hidden space-y-8" role="tabpanel" aria-labelledby="nav-sec3">
+                <h2 class="text-2xl font-bold" style="color: var(--main-blue);">Sección 3: Contenidos</h2>
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-xl font-semibold" style="color: var(--text-gray);">Saberes de la Asignatura</h3>
+                        <button id="suggest-saberes-btn" class="font-bold py-2 px-4 rounded-lg flex items-center text-sm btn-secondary" aria-label="Sugerir saberes con IA">
+                            <span id="saberes-btn-text">✨ Sugerir Saberes con IA</span>
+                            <svg id="saberes-spinner" class="spinner h-4 w-4 ml-2 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        </button>
+                    </div>
+                    <p class="text-sm mb-4" style="color: var(--text-gray);">Defina los saberes clave para desarrollar la competencia. Puede usar el asistente de IA para obtener un borrador inicial.</p>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div>
+                            <label for="saberes-procedimentales" class="block font-semibold text-gray-600">Saberes Procedimentales (Saber Hacer)</label>
+                            <textarea id="saberes-procedimentales" rows="8" class="mt-1 w-full p-2 border border-gray-300 rounded-md" placeholder="Habilidades, técnicas, métodos..."></textarea>
+                        </div>
+                        <div>
+                            <label for="saberes-conceptuales" class="block font-semibold text-gray-600">Saberes Conceptuales (Saber Conocer)</label>
+                            <textarea id="saberes-conceptuales" rows="8" class="mt-1 w-full p-2 border border-gray-300 rounded-md" placeholder="Teorías, datos, conceptos..."></textarea>
+                        </div>
+                        <div>
+                            <label for="saberes-actitudinales" class="block font-semibold text-gray-600">Saberes Actitudinales (Saber Ser)</label>
+                            <textarea id="saberes-actitudinales" rows="8" class="mt-1 w-full p-2 border border-gray-300 rounded-md" placeholder="Valores, ética, disposiciones..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-xl font-semibold" style="color: var(--text-gray);">Unidades de Aprendizaje</h3>
+                        <button id="suggest-units-btn" class="font-bold py-2 px-4 rounded-lg flex items-center text-sm btn-secondary" aria-label="Sugerir unidades con IA">
+                            <span id="units-btn-text">✨ Sugerir Unidades con IA</span>
+                            <svg id="units-spinner" class="spinner h-4 w-4 ml-2 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        </button>
+                    </div>
+                     <p class="text-sm mb-4" style="color: var(--text-gray);">A partir de los saberes, organice las unidades de aprendizaje. La IA puede sugerir una estructura lógica.</p>
+                    <textarea id="learning-units" class="w-full p-2 border border-gray-300 rounded-md" rows="5" placeholder="Unidad 1: ...\nUnidad 2: ..."></textarea>
+                </div>
+                 <div class="flex justify-between mt-8">
+                    <button onclick="navigateBack()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg">&larr; Retroceder</button>
+                    <button onclick="navigateToSection(4)" class="font-bold py-2 px-6 rounded-lg btn-primary">Siguiente &rarr;</button>
+                </div>
+            </div>
+            
+            <!-- SECCIÓN 4: ELEMENTOS DE COMPETENCIA -->
+            <div id="section-4" class="section-container hidden space-y-8" role="tabpanel" aria-labelledby="nav-sec4">
+                 <h2 class="text-2xl font-bold" style="color: var(--main-blue);">Sección 4: Elementos de Competencia</h2>
+                 <p class="text-sm -mt-4" style="color: var(--text-gray);">Para cada unidad de aprendizaje, formule un elemento de competencia. Este es un desempeño concreto que desagrega la competencia principal.</p>
+                 <div id="elements-container" class="space-y-6">
+                    <!-- Los elementos de competencia se generarán aquí dinámicamente -->
+                 </div>
+                 <div class="flex justify-between mt-8">
+                    <button onclick="navigateBack()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg">&larr; Retroceder</button>
+                    <button onclick="navigateToSection(5)" class="font-bold py-2 px-6 rounded-lg btn-primary">Siguiente &rarr;</button>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 5: RECURSOS DIDÁCTICOS -->
+            <div id="section-5" class="section-container hidden space-y-8" role="tabpanel" aria-labelledby="nav-sec5">
+                 <h2 class="text-2xl font-bold" style="color: var(--main-blue);">Sección 5: Recursos Didácticos</h2>
+                 <p class="text-sm -mt-4" style="color: var(--text-gray);">La IA puede sugerir estrategias contextualizadas a su asignatura y competencia.</p>
+                 <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-xl font-semibold" style="color: var(--text-gray);">Estrategias de Enseñanza</h3>
+                             <button id="suggest-teaching-btn" class="font-bold py-2 px-4 rounded-lg flex items-center text-sm btn-secondary" aria-label="Sugerir estrategias de enseñanza">
+                                 <span id="teaching-btn-text">✨ Sugerir</span>
+                                 <svg id="teaching-spinner" class="spinner h-4 w-4 ml-2 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                             </button>
+                        </div>
+                        <textarea id="teaching-strategies" rows="10" class="w-full p-2 border border-gray-300 rounded-md bg-gray-50" placeholder="Ej: Aprendizaje basado en problemas..."></textarea>
+                    </div>
+                     <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-xl font-semibold" style="color: var(--text-gray);">Evaluación y Productos</h3>
+                             <button id="suggest-evaluation-btn" class="font-bold py-2 px-4 rounded-lg flex items-center text-sm btn-secondary" aria-label="Sugerir estrategias de evaluación">
+                                 <span id="evaluation-btn-text">✨ Sugerir</span>
+                                 <svg id="evaluation-spinner" class="spinner h-4 w-4 ml-2 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                             </button>
+                        </div>
+                        <textarea id="evaluation-strategies" rows="10" class="w-full p-2 border border-gray-300 rounded-md bg-gray-50" placeholder="Ej: Evidencias de Desempeño..."></textarea>
+                    </div>
+                 </div>
+                 <div class="flex justify-between mt-8">
+                    <button onclick="navigateBack()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg">&larr; Retroceder</button>
+                    <button onclick="navigateToSection(6)" class="font-bold py-2 px-6 rounded-lg btn-primary">Siguiente &rarr;</button>
+                </div>
+            </div>
+            
+            <!-- SECCIÓN 6: BIBLIOGRAFÍA -->
+            <div id="section-6" class="section-container hidden space-y-6" role="tabpanel" aria-labelledby="nav-sec6">
+                <h2 class="text-2xl font-bold" style="color: var(--main-blue);">Sección 6: Bibliografía</h2>
+                <div>
+                    <div class="flex justify-between items-center mb-2 flex-wrap gap-2">
+                        <label for="bibliography" class="block font-semibold" style="color: var(--text-gray);">Referencias Bibliográficas</label>
+                        <div class="flex gap-2">
+                            <button id="suggest-biblio-btn" class="font-bold py-2 px-4 rounded-lg flex items-center text-sm btn-secondary" aria-label="Sugerir Bibliografía">
+                                <span>✨ Sugerir Bibliografía</span>
+                                <svg class="spinner h-4 w-4 ml-2 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                            </button>
+                            <button id="format-apa-btn" class="font-bold py-2 px-4 rounded-lg flex items-center text-sm btn-secondary" aria-label="Formatear a APA 7">
+                                <span>✨ Formatear a APA 7</span>
+                                <svg class="spinner h-4 w-4 ml-2 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                     <p class="text-sm mb-4" style="color: var(--text-gray);">Añada sus referencias (una por línea) y use los asistentes para obtener sugerencias o aplicar el formato APA 7.</p>
+                    <textarea id="bibliography" class="w-full p-2 border border-gray-300 rounded-md" rows="10" placeholder="Ej: Apellido, A. (Año). Título del libro. Editorial."></textarea>
+                </div>
+                 <div class="flex justify-between items-center mt-8">
+                    <button onclick="navigateBack()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg">&larr; Retroceder</button>
+                    <button id="copy-all-btn" class="font-bold py-2 px-6 rounded-lg flex items-center btn-primary" aria-label="Copiar todo el programa">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        <span id="copy-btn-text">Copiar Todo el Programa</span>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <footer class="text-center p-4 bg-white border-t mt-8">
+        <p class="text-sm" style="color: var(--text-gray);">DDC - Cochabamba - 2025 - (AVC)</p>
+    </footer>
+    
+    <div id="notification" class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg hidden transform translate-y-20 transition-transform duration-300" role="alert">
+        <span id="notification-message"></span>
+    </div>
+    
+    <script>
+    // --- Gemini API Configuration ---
+    const apiKey = ""; 
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+    
+    // --- State Management ---
+    const state = {
+        currentSection: 1,
+        identificationSubPhase: 1,
+        completedSections: [1],
+        answers: {
+            elements: [] // Initialize elements state
+        },
+        competency: { verb: '', object: '', purpose: '', condition: '' },
+        activeComponent: null,
+    };
+    
+    // --- UI Elements ---
+    const sections = {
+        1: document.getElementById('section-1'),
+        2: document.getElementById('section-2'),
+        3: document.getElementById('section-3'),
+        4: document.getElementById('section-4'),
+        5: document.getElementById('section-5'),
+        6: document.getElementById('section-6'),
+    };
+    const navTabs = {
+        1: document.getElementById('nav-sec1'),
+        2: document.getElementById('nav-sec2'),
+        3: document.getElementById('nav-sec3'),
+        4: document.getElementById('nav-sec4'),
+        5: document.getElementById('nav-sec5'),
+        6: document.getElementById('nav-sec6'),
+    };
+    
+    // --- Core Navigation ---
+    function navigateToSection(sectionNumber) {
+        if (!state.completedSections.includes(sectionNumber)) {
+            showNotification('Por favor, completa la sección anterior primero.', 'error');
+            return;
+        }
+
+        // Save state of section 4 before navigating away
+        if (state.currentSection === 4) {
+            saveElementsState();
+        }
+        
+        state.currentSection = sectionNumber;
+        
+        Object.values(navTabs).forEach(tab => {
+            tab.classList.remove('active');
+            tab.setAttribute('aria-selected', 'false');
+        });
+        
+        navTabs[sectionNumber].classList.add('active');
+        navTabs[sectionNumber].setAttribute('aria-selected', 'true');
+        
+        Object.values(sections).forEach(sec => sec.classList.add('hidden'));
+        sections[sectionNumber].classList.remove('hidden');
+        
+        if (sectionNumber === 2) {
+            document.getElementById('competency-display').textContent = formatCompetency(state.competency);
+        }
+        if (sectionNumber === 4) {
+            renderElementsSection();
+        }
+        if (sectionNumber < 6 && !state.completedSections.includes(sectionNumber + 1)) {
+            unlockNextSection(sectionNumber + 1);
+        }
+    }
+    
+    function navigateBack() {
+        if (state.currentSection > 1) {
+            navigateToSection(state.currentSection - 1);
+        } else if (state.identificationSubPhase > 1) {
+            state.identificationSubPhase--;
+            renderIdentificationSection();
+        }
+    }
+
+    function unlockNextSection(sectionNumber) {
+        if (sectionNumber > 6) return;
+        if (!state.completedSections.includes(sectionNumber)) {
+            state.completedSections.push(sectionNumber);
+            navTabs[sectionNumber].classList.remove('disabled');
+            navTabs[sectionNumber].removeAttribute('tabindex');
+        }
+    }
+    
+    // --- API Call ---
+    async function callGemini(payload, retries = 3, delay = 1000) {
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!response.ok) {
+                if (response.status === 429 || response.status >= 500) {
+                   throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const errorBody = await response.json();
+                throw new Error(`API Error: ${errorBody.error?.message || response.statusText}`);
+            }
+            const result = await response.json();
+            const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (!text) throw new Error("Respuesta inválida de la API.");
+            return text;
+        } catch (error) {
+            if (retries > 0) {
+                await new Promise(res => setTimeout(res, delay));
+                return callGemini(payload, retries - 1, delay * 2);
+            } else {
+                throw error;
+            }
+        }
+    }
+    
+    // --- Section 1: Identification Logic ---
+    function renderIdentificationSection() {
+        const section1Container = sections[1];
+        switch (state.identificationSubPhase) {
+            case 1: // Initial Info
+                section1Container.innerHTML = `
+                    <div class="phase-container">
+                        <h3 class="text-xl font-semibold text-center mb-2">Datos Generales</h3>
+                        <p class="text-sm text-center mb-6" style="color: var(--text-gray);">Comencemos con la información básica de la asignatura.</p>
+                        <div class="space-y-4 max-w-lg mx-auto">
+                            <div>
+                                <label for="answer-asignatura" class="block font-semibold text-gray-700">¿Cuál es el nombre de la asignatura?</label>
+                                <input type="text" id="answer-asignatura" class="mt-1 w-full p-2 border border-gray-300 rounded-md">
+                            </div>
+                            <div>
+                                <label for="answer-carrera" class="block font-semibold text-gray-700">¿A qué carrera o programa pertenece?</label>
+                                <input type="text" id="answer-carrera" class="mt-1 w-full p-2 border border-gray-300 rounded-md">
+                            </div>
+                            <div>
+                                <label for="answer-semestre" class="block font-semibold text-gray-700">¿En qué semestre o año se ubica?</label>
+                                <input type="text" id="answer-semestre" class="mt-1 w-full p-2 border border-gray-300 rounded-md">
+                            </div>
+                        </div>
+                        <div class="text-right mt-8">
+                            <button id="sec1-phase1-next" class="font-bold py-2 px-6 rounded-lg text-white btn-primary">Siguiente &rarr;</button>
+                        </div>
+                    </div>`;
+                document.getElementById('sec1-phase1-next').addEventListener('click', () => {
+                    state.answers.asignatura = document.getElementById('answer-asignatura').value;
+                    state.answers.carrera = document.getElementById('answer-carrera').value;
+                    state.answers.semestre = document.getElementById('answer-semestre').value;
+                    if (state.answers.asignatura && state.answers.carrera && state.answers.semestre) {
+                        state.identificationSubPhase = 2;
+                        renderIdentificationSection();
+                    } else {
+                        showNotification("Por favor, completa todos los campos.", 'error');
+                    }
+                });
+                break;
+            case 2: // Problematización
+                 section1Container.innerHTML = `
+                    <div class="phase-container">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xl font-semibold" style="color: var(--text-gray);">PROBLEMÁTICAS DEL CONTEXTO</h3>
+                            <button id="generate-draft-btn" class="font-bold py-2 px-4 rounded-lg flex items-center text-sm btn-secondary">
+                                ✨ Generar Borrador con IA
+                            </button>
+                        </div>
+                        <p class="text-sm mt-2" style="color: var(--text-gray);">Evidencia los problemas de la práctica profesional y las tareas/funciones que se aprenden. La IA puede ayudarte a iniciar.</p>
+                        <div class="mt-4">
+                            <label for="answer-problemas" class="block font-semibold text-gray-700">Problemas de la práctica profesional:</label>
+                            <textarea id="answer-problemas" rows="4" class="mt-1 w-full p-2 border border-gray-300 rounded-md"></textarea>
+                        </div>
+                        <div class="mt-4">
+                            <label for="answer-tareas" class="block font-semibold text-gray-700">Tareas/Funciones/Procesos de la práctica profesional:</label>
+                            <textarea id="answer-tareas" rows="4" class="mt-1 w-full p-2 border border-gray-300 rounded-md"></textarea>
+                        </div>
+                        <div class="flex justify-between mt-8">
+                             <button onclick="navigateBack()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg">&larr; Retroceder</button>
+                            <button id="sec1-phase2-next" class="font-bold py-2 px-6 rounded-lg text-white btn-primary">Generar Propuesta de Competencia</button>
+                        </div>
+                    </div>`;
+                document.getElementById('generate-draft-btn').addEventListener('click', handleGenerateDraft);
+                document.getElementById('sec1-phase2-next').addEventListener('click', async () => {
+                    state.answers.problematizacion = {
+                        problemas: document.getElementById('answer-problemas').value,
+                        tareas: document.getElementById('answer-tareas').value
+                    };
+                    if (state.answers.problematizacion.problemas && state.answers.problematizacion.tareas) {
+                        section1Container.innerHTML = `<div class="text-center p-8"><div class="spinner h-8 w-8 mx-auto" style="color: var(--main-blue);"></div><p class="mt-4" style="color: var(--text-gray);">Generando propuesta...</p></div>`;
+                        await generateInitialCompetency();
+                        state.identificationSubPhase = 3;
+                        renderIdentificationSection();
+                    } else {
+                        showNotification("Por favor, completa ambos campos.", 'error');
+                    }
+                });
+                break;
+            case 3: // Refinamiento
+                section1Container.innerHTML = `
+                         <div class="phase-container">
+                            <h3 class="text-xl font-semibold text-center mb-2">Propuesta y Refinamiento de la Competencia</h3>
+                            <p class="text-sm text-center mb-4" style="color: var(--text-gray);">Ajusta cada componente. La vista previa se actualizará en tiempo real.</p>
+                            <div id="live-competency-preview" class="p-4 rounded-lg text-lg text-center mb-6" style="background-color: #f3f4f6;">
+                                <span id="live-verb" class="p-1 rounded" style="background-color: var(--highlight-yellow-light); color: #a16207;">${state.competency.verb}</span>
+                                <span id="live-object" class="p-1 rounded" style="background-color: rgba(13, 66, 117, 0.1); color: var(--main-blue);">${state.competency.object}</span>,
+                                <span id="live-purpose" class="p-1 rounded" style="background-color: rgba(114, 112, 112, 0.1); color: var(--text-gray);">${state.competency.purpose}</span>,
+                                <span id="live-condition" class="p-1 rounded" style="background-color: var(--highlight-yellow-light); color: #a16207;">${state.competency.condition}</span>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div><strong>Verbo:</strong> <input id="edit-verb" class="w-full p-1 border rounded" value="${state.competency.verb}"></div>
+                                <div><strong>Objeto:</strong> <input id="edit-object" class="w-full p-1 border rounded" value="${state.competency.object}"></div>
+                                <div><strong>Finalidad:</strong> <input id="edit-purpose" class="w-full p-1 border rounded" value="${state.competency.purpose}"></div>
+                                <div><strong>Condición:</strong> <input id="edit-condition" class="w-full p-1 border rounded" value="${state.competency.condition}"></div>
+                            </div>
+                            <div class="text-center mt-4">
+                                 <button id="suggest-alternatives-btn" class="font-bold py-2 px-4 rounded-lg flex items-center text-sm btn-secondary mx-auto">
+                                   <span id="suggest-alt-text">✨ Sugerir Alternativas con IA</span>
+                                   <svg id="suggest-alt-spinner" class="spinner h-4 w-4 ml-2 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                </button>
+                            </div>
+                            <div id="alternatives-container" class="mt-4 space-y-2"></div>
+                            <div class="flex justify-between mt-8">
+                                 <button onclick="navigateBack()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg">&larr; Retroceder</button>
+                                <button id="sec1-phase3-next" class="font-bold py-2 px-6 rounded-lg text-white btn-primary">Finalizar y Justificar</button>
+                            </div>
+                        </div>`;
+                
+                const updateLivePreview = () => {
+                    document.getElementById('live-verb').textContent = document.getElementById('edit-verb').value;
+                    document.getElementById('live-object').textContent = document.getElementById('edit-object').value;
+                    document.getElementById('live-purpose').textContent = document.getElementById('edit-purpose').value;
+                    document.getElementById('live-condition').textContent = document.getElementById('edit-condition').value;
+                };
+
+                ['edit-verb', 'edit-object', 'edit-purpose', 'edit-condition'].forEach(id => {
+                    document.getElementById(id).addEventListener('input', updateLivePreview);
+                });
+
+                document.getElementById('suggest-alternatives-btn').addEventListener('click', handleSuggestAlternatives);
+
+                document.getElementById('sec1-phase3-next').addEventListener('click', async () => {
+                    state.competency.verb = document.getElementById('edit-verb').value;
+                    state.competency.object = document.getElementById('edit-object').value;
+                    state.competency.purpose = document.getElementById('edit-purpose').value;
+                    state.competency.condition = document.getElementById('edit-condition').value;
+                    section1Container.innerHTML = `<div class="text-center p-8"><div class="spinner h-8 w-8 mx-auto" style="color: var(--main-blue);"></div><p class="mt-4" style="color: var(--text-gray);">Generando justificación...</p></div>`;
+                    state.answers.justification = await generateJustification();
+                    state.identificationSubPhase = 4;
+                    renderIdentificationSection();
+                });
+                break;
+            case 4: // Justificación
+                section1Container.innerHTML = `
+                    <div class="phase-container">
+                        <h3 class="text-xl font-semibold text-center mb-6">Competencia Final y Justificación</h3>
+                         <div>
+                            <h4 class="font-bold text-lg text-gray-900 mb-2">Competencia Final:</h4>
+                            <div class="p-4 rounded-lg" style="background-color: #eef2ff; border-left: 4px solid var(--main-blue);">
+                                <p class="font-semibold text-lg" style="color: var(--main-blue);">${formatCompetency(state.competency)}</p>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <h4 class="font-bold text-lg text-gray-900 mb-2">Justificación (Editable):</h4>
+                            <p class="text-sm mb-2" style="color: var(--text-gray);">Revise y ajuste la justificación generada por la IA para asegurar que refleje fielmente el propósito de la asignatura.</p>
+                            <textarea id="justification-editor" class="w-full p-2 border border-gray-300 rounded-md" rows="12">${state.answers.justification.replace(/<[^>]*>/g, '\n').replace(/\n\n/g, '\n')}</textarea>
+                        </div>
+                        <div class="flex justify-between mt-8">
+                             <button onclick="navigateBack()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg">&larr; Retroceder</button>
+                            <button id="complete-sec1" class="font-bold py-2 px-6 rounded-lg text-white btn-primary">Completar Sección 1</button>
+                        </div>
+                    </div>`;
+                document.getElementById('complete-sec1').addEventListener('click', () => {
+                    state.answers.justification = document.getElementById('justification-editor').value;
+                    unlockNextSection(2);
+                    navigateToSection(2);
+                });
+                break;
+        }
+    }
+    
+    // --- Section 4: Elements of Competence Logic ---
+    function saveElementsState() {
+        const units = document.getElementById('learning-units').value.split('\n').filter(u => u.trim() !== '');
+        state.answers.elements = []; // Reset and save fresh
+        units.forEach((unitName, index) => {
+            const verb = document.getElementById(`element-verb-${index}`)?.value || '';
+            const object = document.getElementById(`element-object-${index}`)?.value || '';
+            const condition = document.getElementById(`element-condition-${index}`)?.value || '';
+            state.answers.elements[index] = { verb, object, condition };
+        });
+    }
+
+    function renderElementsSection() {
+        const container = document.getElementById('elements-container');
+        const unitsText = document.getElementById('learning-units').value;
+        const units = unitsText.split('\n').filter(u => u.trim() !== '');
+
+        if (units.length === 0) {
+            container.innerHTML = `<p class="text-center text-gray-500">Por favor, defina al menos una unidad de aprendizaje en la sección 'Contenidos' para continuar.</p>`;
+            return;
+        }
+
+        container.innerHTML = ''; // Clear previous content
+
+        units.forEach((unitName, index) => {
+            const elementHtml = `
+                <div class="p-4 border rounded-lg bg-gray-50">
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="text-lg font-semibold" style="color: var(--main-blue);">${unitName}</h4>
+                        <button class="suggest-element-btn font-bold py-1 px-3 rounded-lg flex items-center text-sm btn-secondary" data-unit-name="${unitName}" data-index="${index}">
+                            <span>✨ Sugerir</span>
+                            <svg class="spinner h-4 w-4 ml-2 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        </button>
+                    </div>
+                    <div id="live-element-preview-${index}" class="p-3 rounded-lg text-md text-center mb-4" style="background-color: #f3f4f6;">
+                        <span id="live-element-verb-${index}" class="p-1 rounded" style="background-color: var(--highlight-yellow-light); color: #a16207;">Verbo</span>
+                        <span id="live-element-object-${index}" class="p-1 rounded" style="background-color: rgba(13, 66, 117, 0.1); color: var(--main-blue);">Objeto</span>,
+                        <span id="live-element-condition-${index}" class="p-1 rounded" style="background-color: rgba(114, 112, 112, 0.1); color: var(--text-gray);">Condición</span>
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div>
+                            <label for="element-verb-${index}" class="block text-sm font-medium text-gray-700">Verbo de desempeño</label>
+                            <input type="text" id="element-verb-${index}" data-index="${index}" class="element-input mt-1 w-full p-2 border border-gray-300 rounded-md">
+                        </div>
+                        <div>
+                            <label for="element-object-${index}" class="block text-sm font-medium text-gray-700">Objeto</label>
+                            <input type="text" id="element-object-${index}" data-index="${index}" class="element-input mt-1 w-full p-2 border border-gray-300 rounded-md">
+                        </div>
+                        <div>
+                            <label for="element-condition-${index}" class="block text-sm font-medium text-gray-700">Condición de referencia</label>
+                            <input type="text" id="element-condition-${index}" data-index="${index}" class="element-input mt-1 w-full p-2 border border-gray-300 rounded-md">
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.innerHTML += elementHtml;
+        });
+
+        // Restore state after creating all elements
+        units.forEach((_, index) => {
+            if (state.answers.elements && state.answers.elements[index]) {
+                const el = state.answers.elements[index];
+                const verbInput = document.getElementById(`element-verb-${index}`);
+                const objectInput = document.getElementById(`element-object-${index}`);
+                const conditionInput = document.getElementById(`element-condition-${index}`);
+                
+                if(verbInput) verbInput.value = el.verb;
+                if(objectInput) objectInput.value = el.object;
+                if(conditionInput) conditionInput.value = el.condition;
+
+                if(verbInput) verbInput.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        });
+
+        document.querySelectorAll('.suggest-element-btn').forEach(btn => btn.addEventListener('click', handleSuggestElement));
+        document.querySelectorAll('.element-input').forEach(input => input.addEventListener('input', updateElementPreview));
+        unlockNextSection(5);
+    }
+    
+    function updateElementPreview(event) {
+        const index = event.target.dataset.index;
+        const verb = document.getElementById(`element-verb-${index}`).value;
+        const object = document.getElementById(`element-object-${index}`).value;
+        const condition = document.getElementById(`element-condition-${index}`).value;
+
+        document.getElementById(`live-element-verb-${index}`).textContent = verb || 'Verbo';
+        document.getElementById(`live-element-object-${index}`).textContent = object || 'Objeto';
+        document.getElementById(`live-element-condition-${index}`).textContent = condition || 'Condición';
+    }
+
+    async function handleSuggestElement(event) {
+        const btn = event.currentTarget;
+        const { unitName, index } = btn.dataset;
+        
+        toggleButtonLoading(btn, true);
+        try {
+            const saberesContext = `Procedimentales: ${document.getElementById('saberes-procedimentales').value}. Conceptuales: ${document.getElementById('saberes-conceptuales').value}. Actitudinales: ${document.getElementById('saberes-actitudinales').value}`;
+            const prompt = `Rol: Eres un experto en diseño curricular. Tarea: Formula un "Elemento de Competencia" para la unidad de aprendizaje "${unitName}". Este elemento es un desglose más concreto de la competencia principal. Contexto: - Competencia Principal: "${formatCompetency(state.competency)}" - Saberes de la asignatura: ${saberesContext}. Reglas: El elemento debe tener 3 componentes y solo 3: 1. Verbo de desempeño (acción concreta), 2. Objeto (sobre qué recae la acción), y 3. Condición de referencia (marco de calidad o contexto). No incluyas una finalidad o propósito. Devuelve un único objeto JSON con las claves "verb", "object", y "condition".`;
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: { verb: { type: "STRING" }, object: { type: "STRING" }, condition: { type: "STRING" } },
+                        required: ["verb", "object", "condition"]
+                    }
+                }
+            };
+            const responseText = await callGemini(payload);
+            const elementJson = JSON.parse(responseText);
+
+            const verbInput = document.getElementById(`element-verb-${index}`);
+            const objectInput = document.getElementById(`element-object-${index}`);
+            const conditionInput = document.getElementById(`element-condition-${index}`);
+
+            verbInput.value = elementJson.verb || '';
+            objectInput.value = elementJson.object || '';
+            conditionInput.value = elementJson.condition || '';
+            
+            verbInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+            showNotification(`Sugerencia para "${unitName}" generada.`);
+
+        } catch (e) {
+            showNotification("Error al generar sugerencia: " + e.message, 'error');
+        } finally {
+            toggleButtonLoading(btn, false);
+        }
+    }
+
+
+    // --- Event Listeners for Sections 3, 5, 6 ---
+    document.getElementById('suggest-saberes-btn').addEventListener('click', async () => {
+        const btn = document.getElementById('suggest-saberes-btn');
+        toggleButtonLoading(btn, true);
+        try {
+            const prompt = `Rol: Eres un experto en diseño curricular. Tarea: Basado en la competencia '${formatCompetency(state.competency)}', desglosa los saberes necesarios. Devuelve un objeto JSON con tres claves: 'procedimentales', 'conceptuales', y 'actitudinales'. Reglas: 1. 'procedimentales': string con una lista de verbos en 3ra persona presente indicativo, separados por viñetas (-). 2. 'conceptuales': string con una lista de conceptos clave, separados por viñetas (-). 3. 'actitudinales': string con una lista de enunciados breves que describen la actitud, separados por viñetas (-). Cada enunciado debe comenzar con un adjetivo o participio (ej. 'Comprometido', 'Respetuoso', 'Sensible'), seguido de la especificidad de la acción (ej. 'con la ética profesional...', 'de la diversidad cultural...'). Evita redactarlos en forma abstracta como 'Compromiso', 'Respeto'.`;
+            const payload = { contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json" } };
+            const responseText = await callGemini(payload);
+            const saberesJson = JSON.parse(responseText);
+            document.getElementById('saberes-procedimentales').value = saberesJson.procedimentales || '';
+            document.getElementById('saberes-conceptuales').value = saberesJson.conceptuales || '';
+            document.getElementById('saberes-actitudinales').value = saberesJson.actitudinales || '';
+            showNotification('¡Saberes generados con éxito!');
+        } catch (e) { showNotification("Error al generar saberes: " + e.message, 'error'); } finally { toggleButtonLoading(btn, false); }
+    });
+
+    document.getElementById('suggest-units-btn').addEventListener('click', async () => {
+        const btn = document.getElementById('suggest-units-btn');
+        const saberesContext = `Procedimentales: ${document.getElementById('saberes-procedimentales').value}. Conceptuales: ${document.getElementById('saberes-conceptuales').value}. Actitudinales: ${document.getElementById('saberes-actitudinales').value}`;
+        if (saberesContext.length < 50) { showNotification("Por favor, completa los saberes primero.", 'error'); return; }
+        toggleButtonLoading(btn, true);
+        try {
+            const prompt = `Rol: Eres un experto en diseño curricular. Tarea: Basado en la siguiente lista de saberes, agrupa estos contenidos de manera lógica y pedagógica para proponer una lista de nombres para las Unidades de Aprendizaje. Saberes: ${saberesContext}. Devuelve un objeto JSON con la clave 'unidades' que contenga un array de strings con los nombres de las unidades.`;
+            const payload = { contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json" } };
+            const responseText = await callGemini(payload);
+            const unitsJson = JSON.parse(responseText);
+            document.getElementById('learning-units').value = unitsJson.unidades.join('\n');
+            unlockNextSection(4);
+            showNotification('¡Unidades generadas con éxito!');
+        } catch (e) { showNotification("Error al generar unidades: " + e.message, 'error'); } finally { toggleButtonLoading(btn, false); }
+    });
+    
+    document.getElementById('suggest-teaching-btn').addEventListener('click', async (e) => {
+        const btn = e.target.closest('button');
+        toggleButtonLoading(btn, true);
+        const textarea = document.getElementById('teaching-strategies');
+        textarea.value = "Generando sugerencias...";
+        try {
+            const saberesContext = `Procedimentales: ${document.getElementById('saberes-procedimentales').value}. Conceptuales: ${document.getElementById('saberes-conceptuales').value}. Actitudinales: ${document.getElementById('saberes-actitudinales').value}`;
+            const unitsContext = document.getElementById('learning-units').value;
+            const prompt = `Rol: Eres un experto en pedagogía. Tarea: Sugiere una lista de estrategias de enseñanza específicas y contextualizadas. Contexto: - Asignatura: "${state.answers.asignatura}" - Competencia: "${formatCompetency(state.competency)}" - Saberes: ${saberesContext} - Unidades de Aprendizaje: ${unitsContext}. Reglas: Las estrategias deben ser coherentes con los saberes y la competencia. Para cada una, añade una brevísima caracterización (máximo 15 palabras) de cómo se aplicaría en esta asignatura. Responde en formato de texto plano, con cada estrategia en una nueva línea, usando viñetas (-). No uses ** para negrillas.`;
+            const payload = { contents: [{ parts: [{ text: prompt }] }] };
+            textarea.value = await callGemini(payload);
+        } catch (err) { textarea.value = `Error: ${err.message}`; } finally { toggleButtonLoading(btn, false); }
+    });
+
+    document.getElementById('suggest-evaluation-btn').addEventListener('click', async (e) => {
+        const btn = e.target.closest('button');
+        toggleButtonLoading(btn, true);
+        const textarea = document.getElementById('evaluation-strategies');
+        textarea.value = "Generando sugerencias...";
+        try {
+            const elementsContext = getElementsContext();
+            const prompt = `Rol: Eres un experto en evaluación. Tarea: Sugiere un listado de evidencias pertinentes y contextualizadas. Contexto: - Asignatura: "${state.answers.asignatura}" - Competencia: "${formatCompetency(state.competency)}" - Elementos de Competencia: ${elementsContext}. Reglas: Las evidencias deben permitir evaluar el logro de los elementos de competencia. Clasifícalas en 'Evidencias de Desempeño', 'Evidencias de Producto' y 'Evidencias de Conocimiento'. No se requiere especificación detallada. Responde en formato de texto plano con títulos claros y viñetas (-) para los ítems. No uses ** para negrillas.`;
+            const payload = { contents: [{ parts: [{ text: prompt }] }] };
+            textarea.value = await callGemini(payload);
+            unlockNextSection(6);
+        } catch (err) { textarea.value = `Error: ${err.message}`; } finally { toggleButtonLoading(btn, false); }
+    });
+    
+    document.getElementById('suggest-biblio-btn').addEventListener('click', async () => {
+        const btn = document.getElementById('suggest-biblio-btn');
+        const textarea = document.getElementById('bibliography');
+        toggleButtonLoading(btn, true);
+        try {
+            const prompt = `Rol: Eres un bibliotecario académico experto. Tarea: Basado en el contexto de la asignatura "${state.answers.asignatura}" cuya competencia es "${formatCompetency(state.competency)}", sugiere 5 a 7 referencias bibliográficas clave y relevantes. Reglas: Las referencias deben ser en español. Prioriza obras publicadas en los últimos 5 años (desde 2020 hasta el presente). Devuelve solo la lista, una referencia por línea, sin formato APA estricto, solo autor, año y título.`;
+            const payload = { contents: [{ parts: [{ text: prompt }] }] };
+            const suggestions = await callGemini(payload);
+            const currentText = textarea.value.trim();
+            textarea.value = currentText ? `${currentText}\n${suggestions}` : suggestions;
+            showNotification('¡Sugerencias de bibliografía añadidas!');
+        } catch (e) { showNotification("Error al sugerir bibliografía: " + e.message, 'error'); } finally { toggleButtonLoading(btn, false); }
+    });
+
+    document.getElementById('format-apa-btn').addEventListener('click', async () => {
+        const btn = document.getElementById('format-apa-btn');
+        const textarea = document.getElementById('bibliography');
+        if (!textarea.value.trim()) { showNotification("Por favor, añade referencias para formatear.", 'error'); return; }
+        toggleButtonLoading(btn, true);
+        try {
+            const prompt = `Rol: Eres un bibliotecario experto. Tarea: Completa los datos faltantes (año, editorial, etc., si es posible) y formatea la siguiente lista de referencias bibliográficas al estilo APA 7. Devuelve solo el texto formateado, con cada referencia en una nueva línea.\n\n${textarea.value}`;
+            const payload = { contents: [{ parts: [{ text: prompt }] }] };
+            textarea.value = await callGemini(payload);
+            showNotification('¡Referencias formateadas con éxito!');
+        } catch (e) { showNotification("Error al formatear: " + e.message, 'error'); } finally { toggleButtonLoading(btn, false); }
+    });
+    
+    document.getElementById('copy-all-btn').addEventListener('click', () => {
+        let fullText = "**SECCIÓN 1: IDENTIFICACIÓN**\n\n";
+        fullText += `**Asignatura:** ${state.answers.asignatura || ''}\n`;
+        fullText += `**Carrera:** ${state.answers.carrera || ''}\n`;
+        fullText += `**Semestre:** ${state.answers.semestre || ''}\n\n`;
+        fullText += `**Problemas de la práctica profesional:**\n${state.answers.problematizacion?.problemas || ''}\n\n`;
+        fullText += `**Tareas/Funciones/Procesos:**\n${state.answers.problematizacion?.tareas || ''}\n\n`;
+        fullText += "**Justificación:**\n" + (document.getElementById('justification-editor')?.value || state.answers.justification || '') + "\n\n";
+        
+        fullText += "**SECCIÓN 2: COMPETENCIA DE LA ASIGNATURA**\n\n";
+        fullText += formatCompetency(state.competency) + "\n\n";
+
+        fullText += "**SECCIÓN 3: CONTENIDOS**\n\n";
+        fullText += "**Saberes Procedimentales:**\n" + document.getElementById('saberes-procedimentales').value + "\n\n";
+        fullText += "**Saberes Conceptuales:**\n" + document.getElementById('saberes-conceptuales').value + "\n\n";
+        fullText += "**Saberes Actitudinales:**\n" + document.getElementById('saberes-actitudinales').value + "\n\n";
+        fullText += "**Unidades de Aprendizaje:**\n" + document.getElementById('learning-units').value + "\n\n";
+
+        fullText += "**SECCIÓN 4: ELEMENTOS DE COMPETENCIA**\n\n";
+        const units = document.getElementById('learning-units').value.split('\n').filter(u => u.trim() !== '');
+        units.forEach((unitName, index) => {
+            const verb = document.getElementById(`element-verb-${index}`)?.value || '';
+            const object = document.getElementById(`element-object-${index}`)?.value || '';
+            const condition = document.getElementById(`element-condition-${index}`)?.value || '';
+            fullText += `**Elemento de Competencia (${unitName}):**\n${verb} ${object}, ${condition}\n\n`;
+        });
+
+        fullText += "**SECCIÓN 5: RECURSOS DIDÁCTICOS**\n\n";
+        fullText += "**Estrategias de Enseñanza:**\n" + document.getElementById('teaching-strategies').value + "\n\n";
+        fullText += "**Evaluación y Productos:**\n" + document.getElementById('evaluation-strategies').value + "\n\n";
+
+        fullText += "**SECCIÓN 6: BIBLIOGRAFÍA**\n\n";
+        fullText += document.getElementById('bibliography').value;
+
+        const textarea = document.createElement('textarea');
+        textarea.value = fullText;
+        textarea.style.position = 'fixed';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+            document.execCommand('copy');
+            showNotification('¡Programa completo copiado al portapapeles!');
+        } catch (err) {
+            showNotification('Error al copiar el texto.', 'error');
+        }
+        document.body.removeChild(textarea);
+    });
+
+
+    // --- Helper Functions ---
+    function getElementsContext() {
+        const units = document.getElementById('learning-units').value.split('\n').filter(u => u.trim() !== '');
+        let context = '';
+        units.forEach((unitName, index) => {
+            const verb = document.getElementById(`element-verb-${index}`)?.value || '';
+            const object = document.getElementById(`element-object-${index}`)?.value || '';
+            const condition = document.getElementById(`element-condition-${index}`)?.value || '';
+            if (verb && object && condition) {
+                context += `- Para la unidad "${unitName}": ${verb} ${object}, ${condition}.\n`;
+            }
+        });
+        return context || "No definidos aún.";
+    }
+
+    async function handleGenerateDraft() {
+        const draftBtn = document.getElementById('generate-draft-btn');
+        toggleButtonLoading(draftBtn, true);
+        try {
+            const { asignatura, carrera, semestre } = state.answers;
+            if (!asignatura || !carrera || !semestre) {
+                showNotification("Por favor, completa los campos de la fase anterior primero.", 'error');
+                return;
+            }
+            const prompt = `Rol: Eres un experto en diseño curricular. Tarea: Genera un borrador para la sección de problematización de una asignatura. Contexto: - Asignatura: ${asignatura} - Carrera: ${carrera} - Semestre: ${semestre}. Devuelve un único objeto JSON con las claves "problemas" y "tareas". En "problemas" describe los problemas de la práctica profesional. En "tareas" describe las tareas, funciones o procesos que se aprenden.`;
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: { problemas: { type: "STRING" }, tareas: { type: "STRING" } },
+                        required: ["problemas", "tareas"]
+                    }
+                }
+            };
+            const responseText = await callGemini(payload);
+            const draftJson = JSON.parse(responseText);
+            document.getElementById('answer-problemas').value = draftJson.problemas;
+            document.getElementById('answer-tareas').value = draftJson.tareas;
+            showNotification('¡Borrador generado con éxito!');
+        } catch (error) {
+            showNotification(`Error al generar el borrador: ${error.message}`, 'error');
+        } finally {
+            toggleButtonLoading(draftBtn, false);
+        }
+    }
+    async function generateInitialCompetency() {
+        const { asignatura, carrera, semestre, problematizacion } = state.answers;
+        const problematizacionContext = `Problemas a resolver: ${problematizacion.problemas}. Tareas/Funciones que se aprenden: ${problematizacion.tareas}`;
+        const prompt = `Rol: Eres un experto en diseño curricular por competencias. Tarea: Formula una competencia profesional completa basada en el siguiente contexto. Contexto: - Asignatura: ${asignatura} - Carrera: ${carrera} - Semestre: ${semestre} - Fundamentación y Retos Profesionales: ${problematizacionContext}. Reglas: 1. Un solo verbo de desempeño en presente. 2. Objeto claro. 3. Finalidad: Debe ser concisa y referirse al problema principal. 4. Condición de Referencia: Debe ser general pero clara, especificando un marco de calidad sin entrar en detalles excesivos. Devuelve un único objeto JSON con las claves: "verb", "object", "purpose", "condition".`;
+        const payload = {
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: "OBJECT",
+                    properties: {
+                        verb: { type: "STRING" }, object: { type: "STRING" },
+                        purpose: { type: "STRING" }, condition: { type: "STRING" }
+                    },
+                    required: ["verb", "object", "purpose", "condition"]
+                }
+            }
+        };
+        const responseText = await callGemini(payload);
+        const competencyJson = JSON.parse(responseText);
+        state.competency = competencyJson;
+    }
+    async function generateJustification() {
+        const { asignatura, carrera, problematizacion } = state.answers;
+        const problematizacionContext = `Problemas a resolver: ${problematizacion.problemas}. Tareas/Funciones que se aprenden: ${problematizacion.tareas}`;
+        const prompt = `Rol: Eres un experto en diseño curricular. Tarea: Redacta una justificación para la asignatura "${asignatura}" de la carrera "${carrera}". Estructura la respuesta de forma concisa en los siguientes cuatro puntos, usando formato HTML con etiquetas <h3> y <p>: 1. Caracterización de la asignatura (describe su naturaleza y alcance desde una perspectiva disciplinar). 2. Necesidades y problemáticas que aborda (sintetiza la información de la problematización proporcionada). 3. Aporte al perfil profesional (explica cómo contribuye a las competencias del egresado). 4. Articulación curricular (explica qué aspectos de esta asignatura se relacionan con asignaturas posteriores para contribuir al perfil profesional). Contexto de la problematización: ${problematizacionContext}.`;
+        const payload = { contents: [{ parts: [{ text: prompt }] }] };
+        return await callGemini(payload);
+    }
+    async function handleSuggestAlternatives() {
+        const btn = document.getElementById('suggest-alternatives-btn');
+        toggleButtonLoading(btn, true);
+        const container = document.getElementById('alternatives-container');
+        container.innerHTML = `<div class="spinner h-5 w-5 mx-auto" style="color: var(--main-blue);"></div>`;
+        try {
+            const prompt = `Rol: Eres un experto en diseño curricular. Tarea: Basado en la siguiente problematización, genera 3 formulaciones alternativas completas para la competencia de la asignatura. Problematización: ${JSON.stringify(state.answers.problematizacion)}. Devuelve un objeto JSON con la clave "alternatives", que es un array de objetos, cada uno con las claves "verb", "object", "purpose", "condition".`;
+            const payload = { contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json" } };
+            const responseText = await callGemini(payload);
+            const responseJson = JSON.parse(responseText);
+            let alternativesHtml = '<p class="text-sm font-semibold">Sugerencias de la IA (haz clic para usar):</p>';
+            responseJson.alternatives.forEach((alt, index) => {
+                alternativesHtml += `<div class="p-2 border rounded-md suggestion-item" data-index="${index}">${formatCompetency(alt)}</div>`;
+            });
+            container.innerHTML = alternativesHtml;
+            container.querySelectorAll('.suggestion-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const selectedAlt = responseJson.alternatives[e.target.dataset.index];
+                    document.getElementById('edit-verb').value = selectedAlt.verb;
+                    document.getElementById('edit-object').value = selectedAlt.object;
+                    document.getElementById('edit-purpose').value = selectedAlt.purpose;
+                    document.getElementById('edit-condition').value = selectedAlt.condition;
+                    document.getElementById('edit-verb').dispatchEvent(new Event('input'));
+                });
+            });
+        } catch (e) {
+            container.innerHTML = `<p class="text-red-500">Error al generar alternativas: ${e.message}</p>`;
+        } finally {
+            toggleButtonLoading(btn, false);
+        }
+    }
+    function formatCompetency(comp) { return `${comp.verb || ''} ${comp.object || ''}, ${comp.purpose || ''}, ${comp.condition || ''}`; }
+    function toggleButtonLoading(button, isLoading) {
+        const spinner = button.querySelector('svg');
+        button.disabled = isLoading;
+        if (spinner) spinner.classList.toggle('hidden', !isLoading);
+    }
+    function showNotification(message, type = 'success') {
+        const notification = document.getElementById('notification');
+        const notificationMessage = document.getElementById('notification-message');
+        
+        notificationMessage.textContent = message;
+        notification.classList.remove('bg-green-500', 'bg-red-500', 'hidden', 'translate-y-20');
+        notification.classList.add(type === 'error' ? 'bg-red-500' : 'bg-green-500');
+        
+        setTimeout(() => {
+            notification.classList.remove('translate-y-20');
+        }, 10);
+        
+        setTimeout(() => {
+            notification.classList.add('translate-y-20');
+            setTimeout(() => notification.classList.add('hidden'), 300);
+        }, 3000);
+    }
+
+    // --- Initial Load ---
+    document.addEventListener('DOMContentLoaded', () => {
+        renderIdentificationSection();
+        unlockNextSection(1);
+        navigateToSection(1);
+
+        // Add click listeners to all nav tabs for easier navigation
+        Object.entries(navTabs).forEach(([sectionNumber, tab]) => {
+            tab.addEventListener('click', () => {
+                navigateToSection(parseInt(sectionNumber));
+            });
+        });
+    });
+    </script>
+</body>
+</html>
